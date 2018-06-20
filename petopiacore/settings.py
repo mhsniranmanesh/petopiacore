@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +26,10 @@ SECRET_KEY = '5_y^t!@&wnkb%2*m77tic6k$ht_acafk-8r4w7_6ivz2z8nsgu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.43', 'localhost', '127.0.0.1', '172.25.0.195', '46.101.199.148', 'petopia.ir', 'www.petopia.ir']
 
+
+AUTH_USER_MODEL = 'profiles.User'
 
 # Application definition
 
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'profiles'
 ]
 
 MIDDLEWARE = [
@@ -48,6 +52,37 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/minute',
+        'user': '600/minute'
+    },
+    'PAGE_SIZE': 10
+}
+
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.zoho.com'
+# EMAIL_HOST_USER = 'noreply@wishwork.ir'
+# EMAIL_HOST_PASSWORD = 'Jangamianomiran'
+# EMAIL_PORT = 587
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# SERVER_EMAIL = 'noreply@wishwork.ir'
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=10),
+    'JWT_ALLOW_REFRESH': True,
+}
 
 ROOT_URLCONF = 'petopiacore.urls'
 

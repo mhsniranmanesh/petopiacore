@@ -13,12 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.urls import path, include
 from django.contrib import admin
-
-from petopiacore import settings
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^api/v1/profiles/', include('profiles.urls')),
+    path('admin/', admin.site.urls),
+    path('api/v1/profiles/', include('profiles.urls')),
+    path('api/v1/auth/token/obtain/', obtain_jwt_token),
 ]

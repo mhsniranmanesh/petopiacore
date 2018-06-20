@@ -8,6 +8,10 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from profiles.serializers import (
     CreateUserSerializer,
+    UserGetNavigationSerializer,
+    UserSetNavigationSerializer,
+    UserGetLEDSerializer,
+    UserSetLEDSerializer
 )
 from profiles.models import User
 from rest_framework import status
@@ -19,6 +23,78 @@ class UserCreateView(CreateAPIView):
     serializer_class = CreateUserSerializer
     lookup_field = 'email'
 
+class UserGetNavigationView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            try:
+                data = UserGetNavigationSerializer(user).data
+                return Response(data, status=status.HTTP_200_OK)
+
+            except User.DoesNotExist:
+                return Response(data={'username': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(data={'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UserSetNavigationView(APIView):
+    permission_classes = (AllowAny, )
+
+    def post(self, request):
+        serializer = UserSetNavigationSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                device_number = serializer.validated_data['device_number']
+                user = User.objects.get(device_number=device_number)
+                if 'latitude' in serializer.validated_data.keys():
+                    user.latitude = serializer.validated_data['latitude']
+                if 'longitude' in serializer.validated_data.keys():
+                    user.longitude = serializer.validated_data['longitude']
+
+                user.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            except:
+                return Response(data={'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserSetLEDView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        serializer = UserSetLEDSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                user = request.user
+                if 'is_led_on' in serializer.validated_data.keys():
+                    user.is_led_on = serializer.validated_data['is_led_on']
+
+                user.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            except:
+                return Response(data={'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserGetLEDView(APIView):
+    permission_classes = (AllowAny, )
+
+    def post(self, request):
+        serializer = UserGetLEDSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                device_number = serializer.validated_data['device_number']
+                user = User.objects.get(device_number=device_number)
+
+                return Response({'LED': user.is_led_on}, status=status.HTTP_201_CREATED)
+
+            except:
+                return Response(data={'message': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # class UserUpdateInfosView(UpdateAPIView):
 #     queryset = User.objects.all()

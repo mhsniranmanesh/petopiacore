@@ -21,6 +21,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
            username=validated_data['username'],
            phone_number=validated_data['phone_number'],
            device_number=validated_data['device_number'],
+           is_led_on='0',
            is_active = True,
         )
         user.set_password(validated_data['password'])
@@ -31,16 +32,27 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return user
 
 
-# class UserGetPublicInfosSerializer(serializers.ModelSerializer):
-#     skills = GetSkillsSerializer(many=True, read_only=True)
-#     client_projects = GetUserProjectsInPublicInfos(many=True, read_only=True)
-#     freelancer_projects = GetUserProjectsInPublicInfos(many=True, read_only=True)
-#
-#     class Meta:
-#         model = User
-#         fields = ('username', 'first_name', 'last_name', 'title', 'bio', 'date_joined', 'profile_picture', 'avatar',
-#                   'university', 'skills', 'client_projects', 'freelancer_projects', 'is_freelancer')
-#
+class UserGetNavigationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'latitude', 'longitude', 'is_led_on')
+
+class UserSetNavigationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('device_number','latitude', 'longitude')
+
+class UserGetLEDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['device_number']
+
+
+class UserSetLEDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['is_led_on']
+
 #
 # class UserGetInitialInfosSerializer(serializers.ModelSerializer):
 #     skills = GetSkillsSerializer(many=True, read_only=True)

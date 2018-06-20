@@ -43,12 +43,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(_('phone number'), max_length=16, blank=True)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    latitude = models.FloatField(blank = True)
-    longitude = models.FloatField(blank = True)
+    latitude = models.CharField(blank = True, max_length=50)
+    longitude = models.CharField(blank = True, max_length=50)
 
-    is_led_on = models.IntegerField(blank = True)
+    is_led_on = models.CharField(blank = True, max_length=50)
 
-    device_number = models.IntegerField(blank = False)
+    device_number = models.CharField(blank = False, max_length=50)
 
 
     objects = UserManager()

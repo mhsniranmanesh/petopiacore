@@ -1,3 +1,3 @@
 from .userViews import (
-    UserCreateView,
+    UserCreateView, UserGetNavigationView, UserSetNavigationView, UserGetLEDView, UserSetLEDView
 )
